@@ -1,0 +1,49 @@
+name: Close Milestone on Release Branch Merge
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  close_milestone:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up job
+        run: echo "Setting up job..."
+
+      - name: Check if the PR was merged and the branch name contains 'release/'
+        if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.head.ref, 'release/') }}
+        run: echo "PR was merged and the branch name contains 'release/'"
+
+      - name: Check out the repository
+        if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.head.ref, 'release/') }}
+        uses: actions/checkout@v2
+
+      - name: Close the milestone
+        if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.head.ref, 'release/') }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            
+            // Get the milestone associated with the PR
+            const milestone = pr.milestone;
+            if (milestone) {
+              const milestoneNumber = milestone.number;
+            
+              // Update the milestone to closed state
+              const result = await github.rest.issues.updateMilestone({
+                owner,
+                repo,
+                milestone_number: milestoneNumber,
+                state: 'closed'
+              });
+              console.log(`Milestone ${milestone.title} closed.`);
+            } else {
+              console.log('No milestone associated with this PR.');
+            }
