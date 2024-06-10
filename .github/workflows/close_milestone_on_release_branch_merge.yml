@@ -10,18 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up job
-        run: echo "Setting up job..."
-
       - name: Check if the PR was merged and the branch name contains 'release/'
-        if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.head.ref, 'release/') }}
-        run: echo "PR was merged and the branch name contains 'release/'"
-
-      - name: Check out the repository
-        if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.head.ref, 'release/') }}
-        uses: actions/checkout@v2
-
-      - name: Close the milestone
         if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.head.ref, 'release/') }}
         uses: actions/github-script@v6
         with:
