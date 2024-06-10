@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check if the PR was merged and the branch name contains 'release/'
+      - name: Close milestone if the PR was merged and the branch name contains 'release/'
         if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.head.ref, 'release/') }}
         uses: actions/github-script@v6
         with:
