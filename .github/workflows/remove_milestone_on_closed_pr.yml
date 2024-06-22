@@ -1,0 +1,36 @@
+name: Remove Milestone on PR Close
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  remove_milestone:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check if the PR was closed and not merged
+        if: ${{ github.event.pull_request.merged == false }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            
+            // Check if the PR has an associated milestone
+            if (pr.milestone) {
+              const prNumber = pr.number;
+            
+              // Remove the milestone from the PR by setting milestone to null
+              await github.rest.issues.update({
+                owner,
+                repo,
+                issue_number: prNumber,
+                milestone: null
+              });
+            
+              console.log(`Milestone removed from PR #${prNumber}.`);
+            }
