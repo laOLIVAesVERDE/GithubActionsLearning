@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Check if the PR was closed and not merged
-        if: ${{ github.event.pull_request.merged == false && (contains(github.event.pull_request.head.ref, 'release/') || contains(github.event.pull_request.head.ref, 'hotrelease/')) }}
+        if: ${{ github.event.pull_request.merged == false }}
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
